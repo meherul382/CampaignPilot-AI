@@ -70,7 +70,7 @@ export default function Home() {
                 <div className="result"><h4>Primary text</h4><p className="muted">Stop scrolling. Discover a simpler way to solve the problem your audience is already searching for. See how {product || "this product"} can fit into your routine today.</p></div>
                 <div className="result"><h4>Headlines</h4><span className="pill">Try it today</span><span className="pill">A smarter way to get started</span><span className="pill">See the difference</span></div>
                 <div className="result"><h4>Audience test set</h4><p className="muted">Start broad enough for the platform to learn, then test 2–4 distinct intent or interest clusters based on your real customer profile.</p></div>
-                <div className="result"><h4>UTM template</h4><p className="muted">utm_source=meta&utm_medium=paid_social&utm_campaign={encodeURIComponent((product || "campaign").toLowerCase().replace(/[^a-z0-9]+/g,"-"))}&utm_content={{ad.name}}</p></div>
+                <div className="result"><h4>UTM template</h4><p className="muted">{`utm_source=meta&utm_medium=paid_social&utm_campaign=${encodeURIComponent((product || "campaign").toLowerCase().replace(/[^a-z0-9]+/g,"-"))}&utm_content=ad-name`}</p></div>
               </>}
             </div>
             <div className="actions"><button className="btn secondary">Save draft</button><button className="btn primary">Connect Meta later</button></div>
