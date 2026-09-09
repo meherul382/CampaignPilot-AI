@@ -12,95 +12,55 @@ const features = [
 ];
 
 export default function Home() {
-  const [product, setProduct] = useState("");
-  const [url, setUrl] = useState("");
-  const [description, setDescription] = useState("");
-  const [objective, setObjective] = useState("Sales");
-  const [budget, setBudget] = useState("20");
-  const [market, setMarket] = useState("Bangladesh");
-  const [format, setFormat] = useState("Single image");
-  const [generated, setGenerated] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [message, setMessage] = useState("");
-  const [mediaName, setMediaName] = useState("");
-  const [mediaPreview, setMediaPreview] = useState("");
-  const [mediaType, setMediaType] = useState<"image" | "video" | "">("");
+  const [product, setProduct] = useState(""); const [url, setUrl] = useState(""); const [description, setDescription] = useState("");
+  const [objective, setObjective] = useState("Sales"); const [budget, setBudget] = useState("20"); const [market, setMarket] = useState("Bangladesh"); const [format, setFormat] = useState("Single image");
+  const [generated, setGenerated] = useState(false); const [saved, setSaved] = useState(false); const [message, setMessage] = useState("");
+  const [mediaName, setMediaName] = useState(""); const [mediaPreview, setMediaPreview] = useState(""); const [mediaType, setMediaType] = useState<"image" | "video" | "">("");
+  const [metaConnected, setMetaConnected] = useState(false); const [adAccount, setAdAccount] = useState(""); const [pageId, setPageId] = useState(""); const [pixelId, setPixelId] = useState(""); const [pixelEvent, setPixelEvent] = useState("Purchase");
 
-  const score = useMemo(() => Math.min(96, Math.round(45 + product.length * 1.4 + description.length / 4 + (url ? 8 : 0) + (market ? 5 : 0) + (mediaName ? 8 : 0))), [product, description, url, market, mediaName]);
-
+  const score = useMemo(() => Math.min(96, Math.round(45 + product.length * 1.4 + description.length / 4 + (url ? 8 : 0) + (market ? 5 : 0) + (mediaName ? 8 : 0) + (metaConnected ? 5 : 0) + (pixelId ? 5 : 0))), [product, description, url, market, mediaName, metaConnected, pixelId]);
   const plan: Plan = useMemo(() => {
-    const name = product.trim() || "your product";
-    const benefit = description.trim() || "a useful solution for your customers' needs";
-    const cta = objective === "Leads" ? "Sign Up" : objective === "Traffic" ? "Learn More" : objective === "Engagement" ? "Learn More" : "Shop Now";
+    const name = product.trim() || "your product"; const benefit = description.trim() || "a useful solution for your customers' needs";
+    const cta = objective === "Leads" ? "Sign Up" : objective === "Traffic" || objective === "Engagement" ? "Learn More" : "Shop Now";
     return { angle: `Lead with the clearest customer benefit: ${benefit.slice(0, 150)}. Use one promise, one proof point and one clear next step.`, primary: `Looking for ${name}? Discover a practical way to get started with ${name}. ${description ? description.slice(0, 170) : "Explain the main benefit in simple language and show why it matters."} See the details and take the next step today.`, headlines: [`Discover ${name}`, `${name}: A smarter way to start`, `See what ${name} can do`], audience: ["Broad prospecting", `${market} problem/intent audience`, "Warm visitors or engaged users"], cta, score, format, market };
   }, [product, description, objective, score, format, market]);
 
-  function generatePlan() {
-    if (!product.trim() && !description.trim()) { setMessage("Add a product name or description first."); setGenerated(false); return; }
-    setMessage(""); setGenerated(true); document.getElementById("results")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  function saveDraft() {
-    const draft: Draft = { product, url, description, objective, budget, market, format };
-    localStorage.setItem("campaignpilot-draft", JSON.stringify(draft)); setSaved(true); setMessage("Draft saved in this browser.");
-  }
-
-  function loadDraft() {
-    const raw = localStorage.getItem("campaignpilot-draft");
-    if (!raw) { setMessage("No saved draft found in this browser."); return; }
-    try { const d = JSON.parse(raw) as Draft; setProduct(d.product || ""); setUrl(d.url || ""); setDescription(d.description || ""); setObjective(d.objective || "Sales"); setBudget(d.budget || "20"); setMarket(d.market || "Bangladesh"); setFormat(d.format || "Single image"); setSaved(true); setMessage("Saved draft loaded."); } catch { setMessage("Could not load the saved draft."); }
-  }
-
-  function clearBrief() {
-    setProduct(""); setUrl(""); setDescription(""); setObjective("Sales"); setBudget("20"); setMarket("Bangladesh"); setFormat("Single image"); setGenerated(false); setSaved(false); setMessage(""); removeMedia();
-  }
-
-  function removeMedia() { setMediaName(""); setMediaPreview(""); setMediaType(""); }
-
-  function handleMediaUpload(file?: File) {
-    if (!file) return;
-    const isImage = file.type.startsWith("image/");
-    const isVideo = file.type.startsWith("video/");
-    if (!isImage && !isVideo) { setMessage("Please upload an image or video file."); return; }
-    if (file.size > 25 * 1024 * 1024) { setMessage("File is too large. Maximum size is 25MB."); return; }
-    if (mediaPreview) URL.revokeObjectURL(mediaPreview);
-    setMediaName(file.name); setMediaType(isImage ? "image" : "video"); setMediaPreview(URL.createObjectURL(file)); setMessage(`${isImage ? "Image" : "Video"} attached: ${file.name}`);
-  }
-
+  function generatePlan() { if (!product.trim() && !description.trim()) { setMessage("Add a product name or description first."); setGenerated(false); return; } setMessage(""); setGenerated(true); document.getElementById("results")?.scrollIntoView({ behavior: "smooth", block: "start" }); }
+  function saveDraft() { const draft: Draft = { product, url, description, objective, budget, market, format }; localStorage.setItem("campaignpilot-draft", JSON.stringify(draft)); setSaved(true); setMessage("Draft saved in this browser."); }
+  function loadDraft() { const raw = localStorage.getItem("campaignpilot-draft"); if (!raw) { setMessage("No saved draft found in this browser."); return; } try { const d = JSON.parse(raw) as Draft; setProduct(d.product || ""); setUrl(d.url || ""); setDescription(d.description || ""); setObjective(d.objective || "Sales"); setBudget(d.budget || "20"); setMarket(d.market || "Bangladesh"); setFormat(d.format || "Single image"); setSaved(true); setMessage("Saved draft loaded."); } catch { setMessage("Could not load the saved draft."); } }
+  function removeMedia() { if (mediaPreview) URL.revokeObjectURL(mediaPreview); setMediaName(""); setMediaPreview(""); setMediaType(""); }
+  function clearBrief() { setProduct(""); setUrl(""); setDescription(""); setObjective("Sales"); setBudget("20"); setMarket("Bangladesh"); setFormat("Single image"); setGenerated(false); setSaved(false); setMessage(""); removeMedia(); }
+  function handleMediaUpload(file?: File) { if (!file) return; const isImage = file.type.startsWith("image/"); const isVideo = file.type.startsWith("video/"); if (!isImage && !isVideo) { setMessage("Please upload an image or video file."); return; } if (file.size > 25 * 1024 * 1024) { setMessage("File is too large. Maximum size is 25MB."); return; } if (mediaPreview) URL.revokeObjectURL(mediaPreview); setMediaName(file.name); setMediaType(isImage ? "image" : "video"); setMediaPreview(URL.createObjectURL(file)); setMessage(`${isImage ? "Image" : "Video"} attached: ${file.name}`); }
   async function copyText(text: string, label: string) { try { await navigator.clipboard.writeText(text); setMessage(`${label} copied.`); } catch { setMessage("Copy is not available in this browser."); } }
-
+  function connectMeta() { setMetaConnected(true); setMessage("Meta connection workspace enabled. Add your Ad Account, Page and Pixel details below. Live OAuth publishing still requires Meta App credentials and approved permissions."); document.getElementById("meta")?.scrollIntoView({ behavior: "smooth", block: "center" }); }
   const campaignName = (product || "campaign").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const utm = `utm_source=meta&utm_medium=paid_social&utm_campaign=${campaignName || "campaign"}&utm_content=ad-name`;
 
-  return (
-    <main className="shell">
-      <nav className="nav"><div className="brand">Campaign<span>Pilot AI</span></div><div className="navlinks"><a href="#features">Features</a><a href="#workspace">Builder</a><a href="#how">How it works</a></div><a className="navCta" href="#workspace">Start building</a></nav>
-      <div className="wrap">
-        <section className="hero"><div className="heroCard"><span className="eyebrow">ZERO-COST MVP MODE</span><h1>Build better campaigns from one product brief.</h1><p>Plan your campaign, creative angle, audience tests and tracking in one place. This version works without a paid AI API.</p><div className="actions"><a className="btn primary" href="#workspace">Build my campaign</a><a className="btn secondary" href="#features">Explore features</a></div></div><div className="score"><small>Campaign readiness</small><strong>{score}%</strong><span>Brief → plan → review. Real Meta publishing comes later with approved API access.</span></div></section>
-        <section id="features" className="grid">{features.map((f) => <div className="panel card" key={f.title}><div className="featureIcon">✦</div><h3>{f.title}</h3><p className="muted">{f.text}</p></div>)}</section>
-        <section id="how" className="how panel"><div><span className="eyebrow">HOW IT WORKS</span><h2>Brief → Plan → Review → Publish</h2><p className="muted">Everything needed for the planning stage is available without login.</p></div><div className="steps"><span><b>01</b> Add product</span><span><b>02</b> Add creative</span><span><b>03</b> Generate plan</span><span><b>04</b> Review & export</span></div></section>
-        <section id="workspace" className="workspace"><aside className="panel sidebar"><div className="sectionTitle"><h2>Campaign brief</h2><span className="pill">Free MVP</span></div>
-          <div className="field"><label>Product name</label><input value={product} onChange={(e)=>setProduct(e.target.value)} placeholder="e.g. Timing Booster Capsule" /></div>
-          <div className="field"><label>Landing page URL</label><input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="https://yourwebsite.com/product" /></div>
-          <div className="field"><label>Product description</label><textarea value={description} onChange={(e)=>setDescription(e.target.value.slice(0,500))} placeholder="What is it, who is it for, key benefit, offer or proof?" /><div className="counter">{description.length}/500</div></div>
-          <div className="field"><label>Product creative</label><div className="uploadBox"><input id="media-upload" className="fileInput" type="file" accept="image/*,video/*" onChange={(e)=>handleMediaUpload(e.target.files?.[0])} /><label htmlFor="media-upload" className="uploadButton">＋ Upload image or video</label><span className="uploadHint">PNG, JPG, WEBP, MP4, MOV · Max 25MB</span>{mediaPreview && <div className="mediaPreview">{mediaType === "image" ? <img src={mediaPreview} alt="Uploaded creative preview" /> : <video src={mediaPreview} controls preload="metadata" />}<div className="mediaMeta"><span>{mediaName}</span><button type="button" className="textBtn danger" onClick={removeMedia}>Remove</button></div></div>}</div></div>
-          <div className="field"><label>Campaign objective</label><select value={objective} onChange={(e)=>setObjective(e.target.value)}><option>Sales</option><option>Leads</option><option>Traffic</option><option>Engagement</option></select></div>
-          <div className="twoFields"><div className="field"><label>Market</label><select value={market} onChange={(e)=>setMarket(e.target.value)}><option>Bangladesh</option><option>India</option><option>United States</option><option>United Kingdom</option><option>Global</option></select></div><div className="field"><label>Ad format</label><select value={format} onChange={(e)=>setFormat(e.target.value)}><option>Single image</option><option>Video</option><option>Carousel</option></select></div></div>
-          <div className="field"><label>Daily budget (USD)</label><input type="number" min="1" value={budget} onChange={(e)=>setBudget(e.target.value)} /></div>
-          <button className="btn primary full" onClick={generatePlan}>✦ Generate campaign plan</button><div className="miniActions"><button className="textBtn" onClick={saveDraft}>Save</button><button className="textBtn" onClick={loadDraft}>Load</button><button className="textBtn danger" onClick={clearBrief}>Clear</button></div><p className="tiny">Local MVP mode: your draft stays in this browser. Upload preview is local only; it is not sent to a server yet.</p>
-        </aside>
-        <section className="panel content" id="results"><div className="sectionTitle"><div><h2>Campaign workspace</h2><p className="muted">Review every recommendation before connecting an ad platform.</p></div><span className="pill">{saved ? "Saved draft" : "Draft"}</span></div>
-          {message && <div className="notice">{message}</div>}
-          {!generated ? <div className="empty"><div className="emptyIcon">✦</div><h3>Your campaign plan starts here</h3><p className="muted">Enter the brief and generate a planning package.</p><div className="checkList"><span>✓ Strategy angle</span><span>✓ Ad copy & headlines</span><span>✓ Audience tests</span><span>✓ Creative upload</span></div></div> : <div className="preview">
-            <div className="previewTop"><div><strong>{product || "Your product"} campaign</strong><p className="muted">{objective} · {market} · ${budget}/day · {format}</p></div><span className="ready">{plan.score}% ready</span></div>
-            {mediaPreview && <div className="result"><h4>Creative preview</h4><div className="workspaceMedia">{mediaType === "image" ? <img src={mediaPreview} alt="Campaign creative" /> : <video src={mediaPreview} controls />}<p className="muted">{mediaName}</p></div></div>}
-            <div className="result"><div className="resultHead"><h4>1. Campaign strategy</h4><button className="iconBtn" onClick={()=>copyText(plan.angle,"Strategy")}>Copy</button></div><p className="muted">{plan.angle}</p></div>
-            <div className="result"><div className="resultHead"><h4>2. Primary ad text</h4><button className="iconBtn" onClick={()=>copyText(plan.primary,"Primary text")}>Copy</button></div><p className="muted">{plan.primary}</p></div>
-            <div className="result"><h4>3. Headlines</h4>{plan.headlines.map((h)=><span className="pill" key={h}>{h}</span>)}</div><div className="result"><h4>4. Audience test set</h4>{plan.audience.map((a)=><span className="pill" key={a}>{a}</span>)}</div><div className="result"><h4>5. Suggested CTA</h4><span className="cta">{plan.cta}</span></div><div className="result"><div className="resultHead"><h4>6. Tracking template</h4><button className="iconBtn" onClick={()=>copyText(utm,"UTM")}>Copy</button></div><p className="codeBox">{utm}</p></div><div className="result"><h4>7. Launch checklist</h4><div className="checkList"><span>✓ Confirm landing page</span><span>✓ Prepare {format.toLowerCase()} creative</span><span>✓ Review audience and budget</span><span>✓ Check ad policy compliance</span><span>✓ Connect Meta only when ready</span></div></div>
-          </div>}
-          <div className="actions"><button className="btn secondary" disabled={!generated} onClick={saveDraft}>Save draft</button><button className="btn secondary" disabled={!generated} onClick={()=>copyText(`${plan.primary}\n\n${plan.headlines.join("\n")}\n\nCTA: ${plan.cta}\n\n${utm}`,"Campaign package")}>Copy campaign package</button><button className="btn primary" onClick={()=>setMessage("Meta publishing is not enabled yet. It will require a Meta Developer App, OAuth and approved Marketing API access.")}>Connect Meta later</button></div>
-        </section></section>
-      </div><footer className="footer">© 2026 CampaignPilot AI · Zero-cost planning MVP · No login required · Real Meta publishing requires approved Meta API access.</footer>
-    </main>
-  );
+  return <main className="shell">
+    <nav className="nav"><div className="brand">Campaign<span>Pilot AI</span></div><div className="navlinks"><a href="#features">Features</a><a href="#workspace">Builder</a><a href="#meta">Meta</a><a href="#how">How it works</a></div><a className="navCta" href="#workspace">Start building</a></nav>
+    <div className="wrap">
+      <section className="hero"><div className="heroCard"><span className="eyebrow">CAMPAIGNPILOT AI</span><h1>Build better campaigns from one product brief.</h1><p>Plan your campaign, creative, audience, tracking and Meta setup in one place.</p><div className="actions"><a className="btn primary" href="#workspace">Build my campaign</a><a className="btn secondary" href="#meta">Connect Meta</a></div></div><div className="score"><small>Campaign readiness</small><strong>{score}%</strong><span>Brief → plan → Meta setup → review. Live publishing requires approved Meta API access.</span></div></section>
+      <section id="features" className="grid">{features.map(f => <div className="panel card" key={f.title}><div className="featureIcon">✦</div><h3>{f.title}</h3><p className="muted">{f.text}</p></div>)}</section>
+      <section id="how" className="how panel"><div><span className="eyebrow">HOW IT WORKS</span><h2>Brief → Plan → Meta → Review → Publish</h2><p className="muted">Set up the campaign before sending anything live.</p></div><div className="steps"><span><b>01</b> Add product</span><span><b>02</b> Add creative</span><span><b>03</b> Connect Meta</span><span><b>04</b> Review & publish</span></div></section>
+
+      <section id="meta" className="panel metaPanel"><div className="sectionTitle"><div><h2>Facebook / Meta connection</h2><p className="muted">Connect the assets CampaignPilot needs for campaign publishing.</p></div><span className={`status ${metaConnected ? "connected" : ""}`}>{metaConnected ? "Workspace ready" : "Not connected"}</span></div>
+        <div className="metaGrid"><div className="metaConnect"><div className="metaLogo">f</div><div><strong>Meta Ads</strong><p className="muted">Facebook Page · Ad Account · Pixel</p></div><button className="btn primary" onClick={connectMeta}>{metaConnected ? "Meta connected" : "Connect Facebook / Meta"}</button></div>
+          <div className="metaFields"><div className="field"><label>Ad Account ID</label><input value={adAccount} onChange={e=>setAdAccount(e.target.value)} placeholder="act_123456789012345" /></div><div className="field"><label>Facebook Page ID</label><input value={pageId} onChange={e=>setPageId(e.target.value)} placeholder="123456789012345" /></div><div className="field"><label>Meta Pixel ID</label><input value={pixelId} onChange={e=>setPixelId(e.target.value)} placeholder="123456789012345" /></div><div className="field"><label>Primary conversion event</label><select value={pixelEvent} onChange={e=>setPixelEvent(e.target.value)}><option>Purchase</option><option>Lead</option><option>InitiateCheckout</option><option>ViewContent</option></select></div></div>
+        </div><p className="tiny">Setup mode: these fields are currently saved only in the page state. Real Facebook OAuth, asset discovery and Marketing API publishing require a Meta Developer App, App ID/Secret, redirect URL and approved permissions. No fake publish action is shown.</p>
+      </section>
+
+      <section id="workspace" className="workspace"><aside className="panel sidebar"><div className="sectionTitle"><h2>Campaign brief</h2><span className="pill">MVP</span></div>
+        <div className="field"><label>Product name</label><input value={product} onChange={e=>setProduct(e.target.value)} placeholder="e.g. Timing Booster Capsule" /></div><div className="field"><label>Landing page URL</label><input value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://yourwebsite.com/product" /></div><div className="field"><label>Product description</label><textarea value={description} onChange={e=>setDescription(e.target.value.slice(0,500))} placeholder="What is it, who is it for, key benefit, offer or proof?" /><div className="counter">{description.length}/500</div></div>
+        <div className="field"><label>Product creative</label><div className="uploadBox"><input id="media-upload" className="fileInput" type="file" accept="image/*,video/*" onChange={e=>handleMediaUpload(e.target.files?.[0])}/><label htmlFor="media-upload" className="uploadButton">＋ Upload image or video</label><span className="uploadHint">PNG, JPG, WEBP, MP4, MOV · Max 25MB</span>{mediaPreview && <div className="mediaPreview">{mediaType === "image" ? <img src={mediaPreview} alt="Uploaded creative preview"/> : <video src={mediaPreview} controls preload="metadata"/>}<div className="mediaMeta"><span>{mediaName}</span><button type="button" className="textBtn danger" onClick={removeMedia}>Remove</button></div></div>}</div></div>
+        <div className="field"><label>Campaign objective</label><select value={objective} onChange={e=>setObjective(e.target.value)}><option>Sales</option><option>Leads</option><option>Traffic</option><option>Engagement</option></select></div><div className="twoFields"><div className="field"><label>Market</label><select value={market} onChange={e=>setMarket(e.target.value)}><option>Bangladesh</option><option>India</option><option>United States</option><option>United Kingdom</option><option>Global</option></select></div><div className="field"><label>Ad format</label><select value={format} onChange={e=>setFormat(e.target.value)}><option>Single image</option><option>Video</option><option>Carousel</option></select></div></div><div className="field"><label>Daily budget (USD)</label><input type="number" min="1" value={budget} onChange={e=>setBudget(e.target.value)}/></div>
+        <button className="btn primary full" onClick={generatePlan}>✦ Generate campaign plan</button><div className="miniActions"><button className="textBtn" onClick={saveDraft}>Save</button><button className="textBtn" onClick={loadDraft}>Load</button><button className="textBtn danger" onClick={clearBrief}>Clear</button></div><p className="tiny">Local MVP mode: your draft and creative preview stay in this browser.</p>
+      </aside>
+      <section className="panel content" id="results"><div className="sectionTitle"><div><h2>Campaign workspace</h2><p className="muted">Review recommendations before connecting or publishing.</p></div><span className="pill">{saved ? "Saved draft" : "Draft"}</span></div>{message && <div className="notice">{message}</div>}
+        {!generated ? <div className="empty"><div className="emptyIcon">✦</div><h3>Your campaign plan starts here</h3><p className="muted">Enter the brief and generate a planning package.</p><div className="checkList"><span>✓ Strategy angle</span><span>✓ Ad copy & headlines</span><span>✓ Audience tests</span><span>✓ Creative upload</span><span>✓ Meta + Pixel setup</span></div></div> : <div className="preview"><div className="previewTop"><div><strong>{product || "Your product"} campaign</strong><p className="muted">{objective} · {market} · ${budget}/day · {format}</p></div><span className="ready">{plan.score}% ready</span></div>{mediaPreview && <div className="result"><h4>Creative preview</h4><div className="workspaceMedia">{mediaType === "image" ? <img src={mediaPreview} alt="Campaign creative"/> : <video src={mediaPreview} controls/>}<p className="muted">{mediaName}</p></div></div>}
+          <div className="result"><div className="resultHead"><h4>1. Campaign strategy</h4><button className="iconBtn" onClick={()=>copyText(plan.angle,"Strategy")}>Copy</button></div><p className="muted">{plan.angle}</p></div><div className="result"><div className="resultHead"><h4>2. Primary ad text</h4><button className="iconBtn" onClick={()=>copyText(plan.primary,"Primary text")}>Copy</button></div><p className="muted">{plan.primary}</p></div><div className="result"><h4>3. Headlines</h4>{plan.headlines.map(h=><span className="pill" key={h}>{h}</span>)}</div><div className="result"><h4>4. Audience test set</h4>{plan.audience.map(a=><span className="pill" key={a}>{a}</span>)}</div><div className="result"><h4>5. Suggested CTA</h4><span className="cta">{plan.cta}</span></div><div className="result"><div className="resultHead"><h4>6. Tracking template</h4><button className="iconBtn" onClick={()=>copyText(utm,"UTM")}>Copy</button></div><p className="codeBox">{utm}</p></div><div className="result"><h4>7. Meta setup</h4><div className="checkList"><span>{metaConnected ? "✓ Meta workspace ready" : "○ Connect Meta"}</span><span>{adAccount ? "✓ Ad Account added" : "○ Add Ad Account"}</span><span>{pageId ? "✓ Page added" : "○ Add Facebook Page"}</span><span>{pixelId ? `✓ Pixel ${pixelEvent}` : "○ Add Meta Pixel"}</span></div></div><div className="result"><h4>8. Launch checklist</h4><div className="checkList"><span>✓ Confirm landing page</span><span>✓ Prepare {format.toLowerCase()} creative</span><span>✓ Review audience and budget</span><span>✓ Check Meta ad policy compliance</span><span>✓ Confirm Pixel event</span></div></div>
+        </div>}
+        <div className="actions"><button className="btn secondary" disabled={!generated} onClick={saveDraft}>Save draft</button><button className="btn secondary" disabled={!generated} onClick={()=>copyText(`${plan.primary}\n\n${plan.headlines.join("\n")}\n\nCTA: ${plan.cta}\n\n${utm}`,"Campaign package")}>Copy campaign package</button><button className="btn primary" onClick={connectMeta}>{metaConnected ? "Meta workspace" : "Connect Facebook / Meta"}</button></div>
+      </section></section>
+    </div><footer className="footer">© 2026 CampaignPilot AI · Campaign planning + Meta setup workspace · Live publishing requires approved Meta API access.</footer>
+  </main>;
 }
