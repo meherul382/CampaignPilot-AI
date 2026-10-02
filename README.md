@@ -1,18 +1,9 @@
-# CampaignPilot AI
+# AdPage Builder
 
-AI-powered campaign planning workspace for small businesses.
+Mixed-content website for adpage-builder.xyz.
 
-## Current MVP
-- Product briefing workspace
-- Campaign strategy generation UI
-- Ad copy, headline, CTA and audience recommendations
-- Budget planning inputs
-- UTM builder
-- Meta Ads connection placeholder
-- Review-before-publish workflow
+Features: Trending, Technology, Lifestyle, Travel, Entertainment, Guides, search/filtering, responsive design, newsletter demo, and free-tool cards.
 
-## Important
-This first release does **not** auto-publish ads or automate activity on Facebook Groups. Meta campaign publishing must use Meta's official APIs and explicit user authorization.
+Adsterra areas are placeholders. Replace each placeholder with the exact Adsterra code provided for the approved ad unit/account.
 
-## Deploy
-This project is designed for Vercel.
+Run: npm install && npm run dev
